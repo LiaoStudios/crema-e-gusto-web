@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crema &amp; Gusto | Pasticceria &amp; Caffetteria — Funo &amp; Bologna</title>
+  <meta name="description" content="Crema & Gusto: pasticceria e caffetteria artigianale a Funo di Argelato e a Bologna (Arcoveggio). Torte su misura, pasticcini, lievitati, colazioni e aperitivi. Produzione propria.">
+  <link rel="icon" href="assets/logo/cg-monogram-burgundy.png" type="image/png">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- DEMO: Tailwind via CDN. In produzione compilare Tailwind localmente (vedi IMPLEMENTATION_PLAN.md §3). -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+    :root {
+      --burgundy: #600010;
+      --burgundy-deep: #4a000c;
+      --cream: #FDFBF7;
+      --off-white: #FFFFFF;
+      --onyx: #1A1A1A;
+      --gold: #c9a24b;
+      --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--cream); color: var(--onyx); }
+    .font-serif { font-family: 'Crimson Pro', serif; }
+    .font-script { font-family: 'Great Vibes', cursive; }
+    .text-burgundy { color: var(--burgundy); }
+    .bg-burgundy { background-color: var(--burgundy); }
+    .bg-burgundy-deep { background-color: var(--burgundy-deep); }
+    .bg-cream { background-color: var(--cream); }
+    .text-onyx { color: var(--onyx); }
+    .text-gold { color: var(--gold); }
+    .border-burgundy { border-color: var(--burgundy); }
+
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: ''; position: absolute; left: 0; bottom: -4px; display: block; width: 0; height: 1.5px;
+      background: var(--gold); transition: width 0.35s var(--ease-soft);
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(28px); }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal { transition: opacity 0.7s var(--ease-soft), transform 0.7s var(--ease-soft); }
+      .reveal[data-delay="1"] { transition-delay: 0.08s; }
+      .reveal[data-delay="2"] { transition-delay: 0.16s; }
+      .reveal[data-delay="3"] { transition-delay: 0.24s; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Editorial category photo — rounded corners, image fills edge-to-edge, no overlay */
+    .edit-photo { position: relative; cursor: pointer; overflow: hidden; border-radius: 1rem; box-shadow: 0 20px 44px -24px rgba(26,10,12,0.4); }
+    .edit-photo img { display: block; transform: scale(1.09); transform-origin: center; transition: transform 0.8s var(--ease-soft); }
+    .edit-photo:hover img { transform: scale(1.15); }
+    .edit-photo::after { content: ''; position: absolute; inset: 0; background: rgba(74,0,12,0); transition: background 0.4s ease; }
+    .edit-photo:hover::after { background: rgba(74,0,12,0.08); }
+
+    .edit-cta-btn { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--burgundy); color: #fff; font-weight: 600; padding: 0.85rem 1.75rem; border-radius: 9999px; cursor: pointer; border: none; font-size: 0.95rem; box-shadow: 0 10px 24px -10px rgba(96,0,16,0.5); transition: transform 0.3s var(--ease-soft), box-shadow 0.3s var(--ease-soft), background 0.3s ease; }
+    .edit-cta-btn:hover { transform: translateY(-2px) scale(1.03); background: var(--burgundy-deep); box-shadow: 0 16px 32px -12px rgba(96,0,16,0.55); }
+
+    .thumb { cursor: pointer; overflow: hidden; }
+    .thumb img { transform: scale(1.06); transform-origin: center; transition: transform 0.6s var(--ease-soft); }
+    .thumb:hover img { transform: scale(1.12); }
+
+    /* Lightbox */
+    #lightbox { position: fixed; inset: 0; z-index: 100; display: none; background: rgba(20,10,12,0.94); backdrop-filter: blur(6px); }
+    #lightbox.open { display: flex; flex-direction: column; }
+    #lightbox .lb-stage { flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem; min-height: 0; }
+    #lightbox img.lb-img { max-width: 92vw; max-height: 74vh; border-radius: 0.75rem; box-shadow: 0 20px 60px rgba(0,0,0,0.5); object-fit: contain; }
+    @media (prefers-reduced-motion: no-preference) { #lightbox img.lb-img { animation: lbin 0.35s var(--ease-soft); } }
+    @keyframes lbin { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+    .lb-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; border-radius: 9999px;
+      background: rgba(255,255,255,0.12); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition: background 0.25s; }
+    .lb-btn:hover { background: rgba(255,255,255,0.25); }
+    .lb-thumbs { display:flex; gap:0.5rem; overflow-x:auto; padding:1rem 1.25rem 1.5rem; justify-content:flex-start; }
+    .lb-thumbs img { height:56px; width:56px; object-fit:cover; border-radius:0.5rem; opacity:0.5; cursor:pointer; flex:none; transition:opacity 0.2s, outline 0.2s; outline:2px solid transparent; }
+    .lb-thumbs img.active { opacity:1; outline:2px solid var(--gold); }
+
+    /* Preloader */
+    #preloader { position: fixed; inset: 0; z-index: 200; background: var(--burgundy-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.7s var(--ease-soft), visibility 0.7s var(--ease-soft); }
+    #preloader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    #preloader .pl-logo { width: 52px; height: 52px; object-fit: contain; }
+    #preloader .pl-word { font-family: 'Great Vibes', cursive; font-size: clamp(2.5rem, 9vw, 4.25rem); color: #fff; margin-top: 0.35rem; line-height: 1; }
+    #preloader .pl-tag { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-top: 1rem; }
+    #preloader .pl-bar { width: 110px; height: 1px; background: rgba(255,255,255,0.15); margin-top: 1.75rem; overflow: hidden; }
+    #preloader .pl-bar-fill { height: 100%; width: 0%; background: var(--gold); transition: width 1.15s var(--ease-soft); }
+    body.preloading { overflow: hidden; height: 100vh; }
+    @media (prefers-reduced-motion: no-preference) {
+      #preloader .pl-logo, #preloader .pl-word, #preloader .pl-tag { opacity: 0; transform: translateY(14px); animation: plIn 0.8s var(--ease-soft) forwards; }
+      #preloader .pl-word { animation-delay: 0.15s; }
+      #preloader .pl-tag { animation-delay: 0.42s; }
+      #preloader .pl-bar { opacity: 0; animation: plFade 0.5s ease forwards; animation-delay: 0.6s; }
+    }
+    @keyframes plIn { to { opacity: 1; transform: none; } }
+    @keyframes plFade { to { opacity: 1; } }
+
+    /* Word rise-up split animation */
+    .split-line { overflow: hidden; display: inline-block; vertical-align: top; }
+    .split-word { display: inline-block; }
+    @media (prefers-reduced-motion: no-preference) {
+      .split-word { transform: translateY(115%); transition: transform 0.85s var(--ease-soft); transition-delay: calc(var(--i, 0) * 45ms); }
+      .split-in .split-word { transform: translateY(0); }
+    }
+
+    /* Gentle floating chevron (replaces default bounce) */
+    @keyframes floatY { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(8px); opacity: 0.9; } }
+    .float-slow { animation: floatY 2.6s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .float-slow { animation: none; } }
+
+    /* Card lift on hover */
+    .lift-card { transition: transform 0.45s var(--ease-soft), box-shadow 0.45s var(--ease-soft); }
+    .lift-card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px rgba(74,0,12,0.45); }
+
+    html { scroll-padding-top: 84px; }
+  </style>
+</head>
+<body class="preloading">
+  <div id="preloader" role="status" aria-label="Caricamento Crema e Gusto">
+    <img src="assets/logo/cg-monogram-white.png" alt="" class="pl-logo" aria-hidden="true">
+    <p class="pl-word" aria-hidden="true">Crema &amp; Gusto</p>
+    <span class="pl-tag" aria-hidden="true">Pasticceria &amp; Caffetteria</span>
+    <div class="pl-bar"><div class="pl-bar-fill" id="pl-bar-fill"></div></div>
+  </div>
+  <script>
+    (function () {
+      var body = document.body;
+      var pre = document.getElementById('preloader');
+      var fill = document.getElementById('pl-bar-fill');
+      var start = Date.now();
+      var MIN_MS = 1200;
+      requestAnimationFrame(function () { fill.style.width = '100%'; });
+      function reveal() {
+        var wait = Math.max(0, MIN_MS - (Date.now() - start));
+        setTimeout(function () {
+          pre.classList.add('hide');
+          body.classList.remove('preloading');
+          body.classList.add('page-revealed');
+          document.dispatchEvent(new CustomEvent('preloader:done'));
+          setTimeout(function () { pre.remove(); }, 750);
+        }, wait);
+      }
+      if (document.readyState === 'complete') reveal();
+      else window.addEventListener('load', reveal);
+      setTimeout(reveal, 4000);
+    })();
+  </script>
+  <div class="min-h-screen">
+    <!-- Navigation -->
+    <nav id="nav" class="fixed w-full z-50 bg-[#3a000a]/95 backdrop-blur text-white shadow-lg px-5 lg:px-12 py-3 flex items-center justify-between transition-all">
+      <a href="#top" id="nav-brand" class="flex items-center gap-3">
+        <img src="assets/logo/cg-monogram-white.png" alt="Logo Crema e Gusto" class="w-10 h-10 object-contain">
+        <span class="font-script text-3xl leading-none text-white pt-1">Crema &amp; Gusto</span>
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide uppercase">
+        <a href="#creazioni" class="nav-link text-white/90 hover:text-white transition-colors">Le Creazioni</a>
+        <a href="#storia" class="nav-link text-white/90 hover:text-white transition-colors">La Storia</a>
+        <a href="#sedi" class="nav-link text-white/90 hover:text-white transition-colors">Le Sedi</a>
+      </div>
+      <a href="#sedi" id="nav-cta-visit" class="bg-white text-burgundy px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-cream hover:scale-105 transition-all shadow-md">
+        Vieni a Trovarci
+      </a>
+    </nav>
+
+    <!-- Hero -->
+    <section id="top" class="relative h-screen min-h-[620px] flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 z-0">
+        <img id="hero-bg" src="assets/google/funo/funo_01.jpg" alt="Interno della pasticceria Crema e Gusto con il bancone delle paste" class="w-full h-full object-cover scale-110">
+        <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(74,0,12,0.55) 0%, rgba(26,10,12,0.45) 45%, rgba(74,0,12,0.75) 100%);"></div>
+      </div>
+      <div class="relative z-10 text-center text-white px-4 max-w-4xl">
+        <span class="hero-reveal block uppercase tracking-[0.35em] text-xs sm:text-sm mb-4 text-white/80 reveal">Pasticceria &amp; Caffetteria · Funo &amp; Bologna</span>
+        <p class="hero-reveal font-script text-6xl sm:text-7xl md:text-8xl text-white mb-3 reveal" data-delay="1">Crema &amp; Gusto</p>
+        <h1 id="hero-title" class="text-3xl md:text-5xl font-serif font-semibold mb-7 leading-tight">
+          <span class="split-target">L'arte del dolce,</span> <span class="split-target italic text-gold">ogni giorno.</span>
+        </h1>
+        <p class="hero-reveal text-base md:text-xl mb-9 max-w-2xl mx-auto font-light leading-relaxed text-white/90 reveal" data-delay="3">
+          Produzione artigianale propria: dalle colazioni al banco fino all'aperitivo della sera. Due locali in Emilia, un'unica passione.
+        </p>
+        <div class="hero-reveal flex flex-col sm:flex-row items-center justify-center gap-4 reveal" data-delay="3">
+          <a href="#creazioni" id="hero-cta-menu" class="w-full sm:w-auto px-9 py-4 bg-white text-burgundy font-semibold rounded-full hover:scale-105 hover:shadow-2xl transition-all shadow-lg">
+            Scopri le Creazioni
+          </a>
+          <a href="#sedi" id="hero-cta-map" class="w-full sm:w-auto px-9 py-4 border border-white/60 text-white font-semibold rounded-full hover:bg-white/10 hover:border-white transition-all">
+            Dove Trovarci
+          </a>
+        </div>
+      </div>
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 float-slow">
+        <iconify-icon icon="lucide:chevron-down" class="text-3xl text-white/50"></iconify-icon>
+      </div>
+    </section>
+
+    <!-- Le Creazioni (category galleries) -->
+    <section id="creazioni" class="py-24 px-6 lg:px-24 bg-cream">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+          <span class="inline-flex items-center gap-3 text-burgundy font-semibold tracking-widest uppercase text-sm">
+            <span class="w-8 h-px bg-burgundy/40"></span> La Vetrina <span class="w-8 h-px bg-burgundy/40"></span>
+          </span>
+          <h2 id="creazioni-title" class="text-4xl md:text-5xl font-serif font-bold text-onyx mt-3 mb-4"><span class="split-target">Le Nostre Creazioni</span></h2>
+          <div class="h-px w-20 bg-gold mx-auto"></div>
+          <p class="text-gray-500 font-light mt-6 max-w-xl mx-auto">Tocca una categoria per sfogliare le foto. Tutto rigorosamente di produzione propria.</p>
+        </div>
+
+        <div class="space-y-20 lg:space-y-28">
+          <!-- Torte -->
+          <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 reveal">
+              <div class="edit-photo aspect-[4/3]" data-gallery="torte" role="button" tabindex="0" aria-label="Apri galleria Torte">
+                <img src="assets/facebook/funo/funo_06.jpg" alt="Torta artigianale decorata con la firma Crema &amp; Gusto" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <div class="w-full lg:w-1/2 reveal" data-delay="1">
+              <span class="text-burgundy font-serif italic text-lg">01</span>
+              <h3 class="text-3xl md:text-4xl font-serif font-bold text-onyx mt-2 mb-4">Torte</h3>
+              <p class="text-gray-600 text-lg leading-relaxed mb-6">Ogni torta nasce su misura: basi soffici, creme fresche e decorazioni realizzate a mano per rendere unico ogni compleanno, laurea o ricorrenza. Dalle classiche alla frutta alle creazioni più scenografiche, lavoriamo insieme a voi per il dolce che avete in mente.</p>
+              <button type="button" data-gallery="torte" class="edit-cta-btn">
+                <iconify-icon icon="lucide:image"></iconify-icon> Scopri le altre foto
+              </button>
+            </div>
+          </div>
+
+          <!-- Pasticcini (inverted) -->
+          <div class="flex flex-col lg:flex-row-reverse items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 reveal">
+              <div class="edit-photo aspect-[4/3]" data-gallery="pasticcini" role="button" tabindex="0" aria-label="Apri galleria Pasticcini">
+                <img src="assets/instagram/DH--rdxMt8q_01.jpg" alt="Mignon glassati con ciliegia" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <div class="w-full lg:w-1/2 reveal" data-delay="1">
+              <span class="text-burgundy font-serif italic text-lg">02</span>
+              <h3 class="text-3xl md:text-4xl font-serif font-bold text-onyx mt-2 mb-4">Pasticcini</h3>
+              <p class="text-gray-600 text-lg leading-relaxed mb-6">Bignè, crostatine, mousse e piccola pasticceria: l'ideale per la colazione, un buffet o semplicemente per concedersi un momento dolce. Preparati ogni giorno nel nostro laboratorio, in decine di varianti diverse.</p>
+              <button type="button" data-gallery="pasticcini" class="edit-cta-btn">
+                <iconify-icon icon="lucide:image"></iconify-icon> Scopri le altre foto
+              </button>
+            </div>
+          </div>
+
+          <!-- Ricorrenze -->
+          <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 reveal">
+              <div class="edit-photo aspect-[4/3]" data-gallery="ricorrenze" role="button" tabindex="0" aria-label="Apri galleria Ricorrenze">
+                <img src="assets/instagram/DIZbgeVsGxB_01.jpg" alt="Colomba artigianale al pistacchio" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <div class="w-full lg:w-1/2 reveal" data-delay="1">
+              <span class="text-burgundy font-serif italic text-lg">03</span>
+              <h3 class="text-3xl md:text-4xl font-serif font-bold text-onyx mt-2 mb-4">Ricorrenze</h3>
+              <p class="text-gray-600 text-lg leading-relaxed mb-6">Zeppole di San Giuseppe, colombe di Pasqua, chiacchiere di Carnevale e dolci delle feste: seguiamo il calendario delle tradizioni italiane con ricette classiche e la nostra firma artigianale.</p>
+              <button type="button" data-gallery="ricorrenze" class="edit-cta-btn">
+                <iconify-icon icon="lucide:image"></iconify-icon> Scopri le altre foto
+              </button>
+            </div>
+          </div>
+
+          <!-- Bar & Caffetteria (inverted) -->
+          <div class="flex flex-col lg:flex-row-reverse items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 reveal">
+              <div class="edit-photo aspect-[4/3]" data-gallery="bar" role="button" tabindex="0" aria-label="Apri galleria Bar e Caffetteria">
+                <img src="assets/instagram/DQtJ82VDRGw_01.jpg" alt="Cappuccino con latte art" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <div class="w-full lg:w-1/2 reveal" data-delay="1">
+              <span class="text-burgundy font-serif italic text-lg">04</span>
+              <h3 class="text-3xl md:text-4xl font-serif font-bold text-onyx mt-2 mb-4">Bar &amp; Caffetteria</h3>
+              <p class="text-gray-600 text-lg leading-relaxed mb-6">Un buon espresso, un cappuccino con la schiuma perfetta o un aperitivo con stuzzichini fatti in casa: i nostri bar sono un punto di ritrovo per tutta la giornata, dalla colazione alla sera.</p>
+              <button type="button" data-gallery="bar" class="edit-cta-btn">
+                <iconify-icon icon="lucide:image"></iconify-icon> Scopri le altre foto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Storia / Filosofia -->
+    <section id="storia" class="py-24 px-6 lg:px-24 bg-white overflow-hidden">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+        <div class="w-full lg:w-3/5 reveal">
+          <div class="relative">
+            <img src="assets/google/arcoveggio/arco_01.jpg" alt="Interno della caffetteria Crema e Gusto ad Arcoveggio, Bologna" class="rounded-3xl shadow-2xl w-full object-cover">
+            <div class="absolute -bottom-8 -right-3 sm:-right-8 hidden sm:block">
+              <div class="bg-burgundy text-white px-8 py-7 rounded-2xl shadow-xl text-center">
+                <p class="text-4xl font-serif font-bold mb-1">4,1<span class="text-2xl align-top text-gold">★</span></p>
+                <p class="text-xs uppercase tracking-widest font-medium text-white/80">su Google<br>1.700+ recensioni</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-full lg:w-2/5 space-y-6 reveal" data-delay="1">
+          <span class="inline-flex items-center gap-3 text-burgundy font-semibold tracking-widest uppercase text-sm">
+            <span class="w-8 h-px bg-burgundy/40"></span> La Nostra Filosofia
+          </span>
+          <h2 id="filosofia-title" class="text-4xl md:text-5xl font-serif font-bold text-onyx leading-tight">
+            <span class="split-target">Fatto in casa,</span> <br><span class="split-target italic">con ingredienti scelti.</span>
+          </h2>
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Da Crema &amp; Gusto la produzione è artigianale e quotidiana: impasti, creme e lievitati nascono ogni mattina nel nostro laboratorio. Dalla colazione al banco fino all'aperitivo della sera, curiamo ogni dettaglio con la stessa passione.
+          </p>
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Due locali accoglienti — a Funo di Argelato e in via dell'Arcoveggio a Bologna — dove fermarsi per un buon caffè, una pasta fresca o una torta su misura.
+          </p>
+          <div class="flex flex-wrap gap-x-8 gap-y-3 pt-2 text-sm font-medium text-onyx">
+            <span class="flex items-center gap-2"><iconify-icon icon="lucide:croissant" class="text-burgundy text-lg"></iconify-icon> Colazioni artigianali</span>
+            <span class="flex items-center gap-2"><iconify-icon icon="lucide:cake-slice" class="text-burgundy text-lg"></iconify-icon> Torte su misura</span>
+            <span class="flex items-center gap-2"><iconify-icon icon="lucide:wine" class="text-burgundy text-lg"></iconify-icon> Aperitivi</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonial -->
+    <section class="py-20 px-6 lg:px-24 bg-cream">
+      <div class="max-w-4xl mx-auto text-center reveal">
+        <iconify-icon icon="ri:double-quotes-l" class="text-6xl text-burgundy/20 mb-5"></iconify-icon>
+        <h2 class="text-2xl md:text-3xl font-serif italic font-medium leading-relaxed mb-8">
+          "La mia pasticceria preferita. Ci ritorno sempre volentieri per la colazione e ho sempre l'imbarazzo nella scelta delle paste. Ottime paste dolci e salate, cappuccini e caffè ben fatti. Personale in gamba e cordiale."
+        </h2>
+        <div class="flex items-center justify-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-burgundy text-white flex items-center justify-center font-serif font-bold text-lg">B</div>
+          <div class="text-left">
+            <p class="font-bold text-onyx">Bianca A.</p>
+            <p class="text-sm text-gray-500">Recensione Google · <span class="text-gold">★★★★★</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Le Sedi (esterni/interni + contatti) -->
+    <section id="sedi" class="py-24 px-6 lg:px-24 bg-burgundy text-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+          <span class="inline-flex items-center gap-3 text-gold font-semibold tracking-widest uppercase text-sm">
+            <span class="w-8 h-px bg-gold/50"></span> Dove Trovarci <span class="w-8 h-px bg-gold/50"></span>
+          </span>
+          <h2 id="sedi-title" class="text-4xl md:text-5xl font-serif font-bold mt-3 mb-4"><span class="split-target">Le Nostre Sedi</span></h2>
+          <p class="text-white/70 font-light">Due locali, stessi orari: tutti i giorni dalle 06:00 alle 21:00.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Sede Funo -->
+          <div class="lift-card bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 reveal">
+            <div class="grid grid-cols-2 gap-3 mb-7">
+              <div class="thumb col-span-2 aspect-[16/9] rounded-2xl" data-gallery="sede-funo" data-index="0" role="button" tabindex="0" aria-label="Foto esterno sede di Funo">
+                <img src="assets/sedi/funo-esterno.jpg" alt="Esterno della pasticceria Crema e Gusto a Funo" class="w-full h-full object-cover" loading="lazy">
+              </div>
+              <div class="thumb col-span-2 aspect-[16/9] rounded-2xl" data-gallery="sede-funo" data-index="1" role="button" tabindex="0" aria-label="Foto interno Funo">
+                <img src="assets/google/funo/funo_01.jpg" alt="Bancone principale sede Funo" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <h3 class="text-3xl font-serif font-bold mb-5">Funo di Argelato</h3>
+            <ul class="space-y-4 text-white/80">
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:map-pin" class="text-2xl text-gold flex-shrink-0"></iconify-icon><span>Via Galliera 4<br>40050 Funo di Argelato (BO)</span></li>
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:phone" class="text-2xl text-gold flex-shrink-0"></iconify-icon><a href="tel:+39051863472" class="hover:text-white">+39 051 863472</a></li>
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:clock" class="text-2xl text-gold flex-shrink-0"></iconify-icon><span>Tutti i giorni · 06:00 – 21:00</span></li>
+            </ul>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="https://www.google.com/maps/search/?api=1&query=Pasticceria+Crema+e+Gusto+Funo+Via+Galliera+4" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-2 bg-white text-burgundy px-6 py-3 rounded-full font-semibold hover:scale-105 transition-transform">
+                <iconify-icon icon="lucide:navigation"></iconify-icon> Indicazioni
+              </a>
+              <a href="tel:+39051863472"
+                 class="inline-flex items-center gap-2 border border-white/60 text-white px-6 py-3 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all">
+                <iconify-icon icon="lucide:phone-call"></iconify-icon> Chiama
+              </a>
+            </div>
+          </div>
+
+          <!-- Sede Arcoveggio -->
+          <div class="lift-card bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 reveal" data-delay="1">
+            <div class="grid grid-cols-2 gap-3 mb-7">
+              <div class="thumb col-span-2 aspect-[16/9] rounded-2xl" data-gallery="sede-arco" data-index="0" role="button" tabindex="0" aria-label="Foto interno sede Arcoveggio">
+                <img src="assets/google/arcoveggio/arco_01.jpg" alt="Interno del bar caffetteria Arcoveggio" class="w-full h-full object-cover" loading="lazy">
+              </div>
+              <div class="thumb col-span-2 aspect-[16/9] rounded-2xl" data-gallery="sede-arco" data-index="1" role="button" tabindex="0" aria-label="Foto vetrina Arcoveggio">
+                <img src="assets/google/arcoveggio/arco_09.jpg" alt="Vetrina Arcoveggio" class="w-full h-full object-cover" loading="lazy">
+              </div>
+            </div>
+            <h3 class="text-3xl font-serif font-bold mb-5">Bologna · Arcoveggio</h3>
+            <ul class="space-y-4 text-white/80">
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:map-pin" class="text-2xl text-gold flex-shrink-0"></iconify-icon><span>Via dell'Arcoveggio 74/b<br>40129 Bologna (BO)</span></li>
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:phone" class="text-2xl text-gold flex-shrink-0"></iconify-icon><a href="tel:+390515874859" class="hover:text-white">+39 051 5874859</a></li>
+              <li class="flex items-start gap-4"><iconify-icon icon="lucide:clock" class="text-2xl text-gold flex-shrink-0"></iconify-icon><span>Tutti i giorni · 06:00 – 21:00</span></li>
+            </ul>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="https://www.google.com/maps/search/?api=1&query=Pasticceria+Crema+e+Gusto+Arcoveggio+Via+dell%27Arcoveggio+74b+Bologna" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-2 bg-white text-burgundy px-6 py-3 rounded-full font-semibold hover:scale-105 transition-transform">
+                <iconify-icon icon="lucide:navigation"></iconify-icon> Indicazioni
+              </a>
+              <a href="tel:+390515874859"
+                 class="inline-flex items-center gap-2 border border-white/60 text-white px-6 py-3 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all">
+                <iconify-icon icon="lucide:phone-call"></iconify-icon> Chiama
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-burgundy-deep text-white pt-14 pb-14 px-6 lg:px-24">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-10 mb-10">
+          <div class="text-center md:text-left flex flex-col items-center md:items-start">
+            <div class="flex items-center gap-3">
+              <img src="assets/logo/cg-monogram-white.png" alt="Logo Crema e Gusto" class="w-11 h-11 object-contain">
+              <span class="font-script text-4xl text-white pt-1">Crema &amp; Gusto</span>
+            </div>
+            <p class="mt-4 text-white/70 max-w-xs">Pasticceria e caffetteria artigianale a Funo di Argelato e a Bologna.</p>
+          </div>
+          <div class="flex space-x-5">
+            <a href="https://www.instagram.com/pasticceria_cremaegusto_/" target="_blank" rel="noopener" aria-label="Instagram" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-burgundy transition-all">
+              <iconify-icon icon="mdi:instagram" class="text-xl"></iconify-icon>
+            </a>
+            <a href="https://www.facebook.com/cremaegustofuno/" target="_blank" rel="noopener" aria-label="Facebook" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-burgundy transition-all">
+              <iconify-icon icon="mdi:facebook" class="text-xl"></iconify-icon>
+            </a>
+          </div>
+        </div>
+        <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-white/60">
+          <p>© 2026 Crema &amp; Gusto. Tutti i diritti riservati.</p>
+          <p class="text-white/40">Landing dimostrativa · vetrina prodotti in arrivo</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Galleria foto">
+    <div class="flex items-center justify-between px-5 pt-5 text-white">
+      <span id="lb-title" class="font-serif text-xl"></span>
+      <div class="flex items-center gap-4">
+        <span id="lb-counter" class="text-white/70 text-sm"></span>
+        <button id="lb-close" aria-label="Chiudi" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center transition-colors">
+          <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <div class="lb-stage relative">
+      <button id="lb-prev" class="lb-btn left-3 md:left-6" aria-label="Precedente"><iconify-icon icon="lucide:chevron-left" class="text-2xl"></iconify-icon></button>
+      <img class="lb-img" id="lb-image" src="" alt="">
+      <button id="lb-next" class="lb-btn right-3 md:right-6" aria-label="Successiva"><iconify-icon icon="lucide:chevron-right" class="text-2xl"></iconify-icon></button>
+    </div>
+    <div class="lb-thumbs hide-scrollbar" id="lb-thumbs"></div>
+  </div>
+
+  <script>
+    // ---- Gallery data ----
+    const IG = 'assets/instagram/';
+    const GF = 'assets/google/funo/';
+    const GA = 'assets/google/arcoveggio/';
+    const FF = 'assets/facebook/funo/';
+    const FA = 'assets/facebook/arcoveggio/';
+    const galleries = {
+      torte: { title: 'Torte', items: [
+        {src: IG+'DF7quyfsE8f_01.jpg', cap: 'Torta con fragole e glassa a specchio'},
+        {src: IG+'DGF-vD4ME5m_01.jpg', cap: 'Torta cuore rossa con chiave dorata'},
+        {src: IG+'DG5woRnMQ02_01.jpg', cap: 'Torta mimosa'},
+        {src: IG+'DZSJ96btCkF_01.jpg', cap: 'Torta scacchiera'},
+        {src: IG+'DIEI4-2so_v_01.jpg', cap: 'Cream tart numeri ai frutti di bosco'},
+        {src: IG+'DK9iKHMMgbR_01.jpg', cap: 'Torta nuziale a piani con fiori freschi'},
+        {src: IG+'DS5VWrejXuu_01.jpg', cap: 'Torta orologio al cioccolato'},
+        {src: IG+'DZRs0uWNEx8_01.jpg', cap: 'Torta a tema per bambini'},
+        {src: GF+'funo_06.jpg', cap: 'Crostata cuore ai frutti di bosco'},
+        {src: GF+'funo_08.jpg', cap: 'Torta di compleanno'},
+        {src: GA+'arco_10.jpg', cap: 'Torta di compleanno personalizzata'},
+        {src: GA+'arco_03.jpg', cap: 'Torte in vetrina'},
+        {src: FF+'funo_02.jpg', cap: 'Torta a tema nautico con orsetto'},
+        {src: FF+'funo_06.jpg', cap: 'Torta decorata Crema & Gusto'},
+        {src: FA+'arcoveggio_01.jpg', cap: 'Crostata di frutta fresca'},
+        {src: FA+'arcoveggio_04.jpg', cap: 'Torta red velvet'},
+        {src: FA+'arcoveggio_07.jpg', cap: 'Torte al cioccolato con physalis'},
+      ]},
+      pasticcini: { title: 'Pasticcini', items: [
+        {src: IG+'DHWDKa1M090_01.jpg', cap: 'Mignon al tiramisù'},
+        {src: IG+'DGk3ef-syae_01.jpg', cap: 'Mignon con crema rosa e cioccolato'},
+        {src: IG+'DH--rdxMt8q_01.jpg', cap: 'Mignon glassati con ciliegia'},
+        {src: IG+'DHI6SLJMwwY_01.jpg', cap: 'Cestini al cioccolato e crumble'},
+        {src: IG+'DHgQqbWMQcd_01.jpg', cap: 'Mignon glassati al limone'},
+        {src: IG+'DHn5SrtMC6g_01.jpg', cap: 'Mignon al cioccolato e mandorle'},
+        {src: IG+'DHyM_cVsubN_01.jpg', cap: 'Crostatine al caramello'},
+        {src: IG+'DG27x9xshPY_01.jpg', cap: 'Crostate di frutta fresca'},
+        {src: GF+'funo_10.jpg', cap: 'Cheesecake al fico'},
+        {src: GF+'funo_05.jpg', cap: 'Biscotteria assortita'},
+        {src: GA+'arco_04.jpg', cap: 'Vassoio di pasticcini misti'},
+        {src: GA+'arco_08.jpg', cap: 'Cornetto al pistacchio'},
+        {src: FA+'arcoveggio_05.jpg', cap: 'Bignè al pistacchio'},
+        {src: FA+'arcoveggio_06.jpg', cap: 'Mignon alla mimosa'},
+        {src: IG+'DOD9Y8fDN0F_02.jpg', cap: 'Girandola sfogliata ai frutti rossi'},
+        {src: IG+'DHQovMSM-rK_04.jpg', cap: 'Bignè al caffè e mandorle'},
+      ]},
+      ricorrenze: { title: 'Ricorrenze', items: [
+        {src: IG+'DHQovMSM-rK_01.jpg', cap: 'Zeppole di San Giuseppe con amarena'},
+        {src: IG+'DIZbgeVsGxB_01.jpg', cap: 'Colomba al pistacchio (Pasqua)'},
+        {src: IG+'DUJTaQGjWMi_01.jpg', cap: 'Biscotti di Carnevale a mascherina'},
+        {src: IG+'DGX_WN6MYEx_01.jpg', cap: 'Chiacchiere di Carnevale'},
+        {src: IG+'DIiZI5VMTKk_01.jpg', cap: 'Uova di Pasqua decorate'},
+        {src: FF+'funo_05.jpg', cap: 'Mignon natalizi (Natale)'},
+        {src: IG+'DIZbgeVsGxB_02.jpg', cap: 'Colomba alle mandorle (Pasqua)'},
+        {src: IG+'DUJTaQGjWMi_02.jpg', cap: 'Biscotti di Carnevale rosa'},
+        {src: IG+'DHQovMSM-rK_02.jpg', cap: 'Zeppola al pistacchio (San Giuseppe)'},
+      ]},
+      bar: { title: 'Bar & Caffetteria', items: [
+        {src: IG+'DQtJ82VDRGw_01.jpg', cap: 'Cappuccino con latte art'},
+        {src: IG+'DGS2N9NM184_01.jpg', cap: 'Cioccolata calda con panna'},
+        {src: IG+'DLQlMvUNwA5_01.jpg', cap: 'Cocktail servito nel melone'},
+        {src: GA+'arco_12.jpg', cap: 'Pizzette e sfizi salati'},
+        {src: GF+'funo_03.jpg', cap: 'Mojito'},
+        {src: GF+'funo_04.jpg', cap: 'Birra alla spina'},
+        {src: FF+'funo_03.jpg', cap: 'Cocktail floreale'},
+        {src: FF+'funo_04.jpg', cap: 'Cocktail al lampone'},
+      ]},
+      'sede-funo': { title: 'Sede di Funo', items: [
+        {src: 'assets/sedi/funo-esterno.jpg', cap: 'Esterno · Funo di Argelato'},
+        {src: GF+'funo_01.jpg', cap: 'Il bancone principale'},
+      ]},
+      'sede-arco': { title: 'Sede Arcoveggio', items: [
+        {src: GA+'arco_01.jpg', cap: 'Interno · bar e caffetteria'},
+        {src: GA+'arco_09.jpg', cap: 'La vetrina'},
+      ]},
+    };
+
+    // ---- Lightbox logic ----
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-image');
+    const lbTitle = document.getElementById('lb-title');
+    const lbCounter = document.getElementById('lb-counter');
+    const lbThumbs = document.getElementById('lb-thumbs');
+    let current = { key: null, idx: 0 };
+
+    function renderThumbs() {
+      const items = galleries[current.key].items;
+      lbThumbs.innerHTML = '';
+      items.forEach((it, i) => {
+        const t = document.createElement('img');
+        t.src = it.src; t.alt = it.cap; t.loading = 'lazy';
+        if (i === current.idx) t.classList.add('active');
+        t.addEventListener('click', () => show(i));
+        lbThumbs.appendChild(t);
+      });
+    }
+    function show(i) {
+      const g = galleries[current.key];
+      current.idx = (i + g.items.length) % g.items.length;
+      const it = g.items[current.idx];
+      lbImg.src = it.src; lbImg.alt = it.cap;
+      lbTitle.textContent = g.title;
+      lbCounter.textContent = (current.idx + 1) + ' / ' + g.items.length;
+      [...lbThumbs.children].forEach((c, ci) => c.classList.toggle('active', ci === current.idx));
+      const active = lbThumbs.children[current.idx];
+      if (active) active.scrollIntoView({block:'nearest', inline:'center'});
+    }
+    function openGallery(key, idx) {
+      if (!galleries[key]) return;
+      current.key = key;
+      renderThumbs();
+      show(idx || 0);
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('lb-close').focus();
+    }
+    function closeGallery() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+
+    document.getElementById('lb-close').addEventListener('click', closeGallery);
+    document.getElementById('lb-next').addEventListener('click', () => show(current.idx + 1));
+    document.getElementById('lb-prev').addEventListener('click', () => show(current.idx - 1));
+    lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lb-stage')) closeGallery(); });
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeGallery();
+      else if (e.key === 'ArrowRight') show(current.idx + 1);
+      else if (e.key === 'ArrowLeft') show(current.idx - 1);
+    });
+
+    document.querySelectorAll('[data-gallery]').forEach(el => {
+      const key = el.getAttribute('data-gallery');
+      const idx = parseInt(el.getAttribute('data-index') || '0', 10);
+      el.addEventListener('click', () => openGallery(key, idx));
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGallery(key, idx); } });
+    });
+
+    // ---- Scroll reveal (bidirectional: replays every time an element enters/leaves the viewport) ----
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => en.target.classList.toggle('in', en.isIntersecting));
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal:not(.hero-reveal)').forEach(el => io.observe(el));
+
+    // ---- Word rise-up split (Ribalta-style) ----
+    function splitWords(el) {
+      const text = el.textContent;
+      el.textContent = '';
+      text.split(/(\s+)/).forEach(tok => {
+        if (/^\s+$/.test(tok)) { el.appendChild(document.createTextNode(tok)); return; }
+        if (!tok) return;
+        const mask = document.createElement('span');
+        mask.className = 'split-line';
+        const inner = document.createElement('span');
+        inner.className = 'split-word';
+        inner.textContent = tok;
+        mask.appendChild(inner);
+        el.appendChild(mask);
+      });
+    }
+    document.querySelectorAll('#hero-title, #creazioni-title, #filosofia-title, #sedi-title').forEach(heading => {
+      let i = 0;
+      heading.querySelectorAll('.split-target').forEach(t => {
+        splitWords(t);
+        t.querySelectorAll('.split-word').forEach(w => w.style.setProperty('--i', i++));
+      });
+    });
+    const splitIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => en.target.classList.toggle('split-in', en.isIntersecting));
+    }, { threshold: 0.4 });
+    ['creazioni-title', 'filosofia-title', 'sedi-title'].forEach(id => {
+      const h = document.getElementById(id);
+      if (h) splitIO.observe(h);
+    });
+
+    // ---- Hero entrance, choreographed to finish loading ----
+    function triggerHero() {
+      document.querySelectorAll('.hero-reveal').forEach(el => el.classList.add('in'));
+      document.getElementById('hero-title')?.classList.add('split-in');
+    }
+    document.addEventListener('preloader:done', triggerHero, { once: true });
+    if (!document.body.classList.contains('preloading')) triggerHero();
+
+    // ---- Subtle hero parallax ----
+    const heroBg = document.getElementById('hero-bg');
+    const heroSection = document.getElementById('top');
+    if (heroBg && heroSection && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      addEventListener('scroll', () => {
+        const rect = heroSection.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < innerHeight) {
+          heroBg.style.transform = 'translateY(' + Math.round(scrollY * 0.15) + 'px)';
+        }
+      }, { passive: true });
+    }
+
+    // ---- Nav shrink on scroll ----
+    const nav = document.getElementById('nav');
+    addEventListener('scroll', () => {
+      if (scrollY > 40) nav.classList.add('py-2','shadow-xl'), nav.classList.remove('py-3');
+      else nav.classList.add('py-3'), nav.classList.remove('py-2','shadow-xl');
+    }, { passive: true });
+  </script>
+</body>
+</html>
